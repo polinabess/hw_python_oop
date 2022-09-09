@@ -13,7 +13,7 @@ class InfoMessage:
 
     def get_message(self) -> str:
         return (
-            f'Тип тренировки: {self.tratraining_type}; '
+            f'Тип тренировки: {self.training_type}; '
             f'Длительность: {self.duration:0.3f} ч.; '
             f'Дистанция: {self.distance:0.3f} км; '
             f'Ср. скорость: {self.speed:0.3f} км/ч; '
