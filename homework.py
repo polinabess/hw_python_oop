@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Type
 
 
 @dataclass
@@ -26,7 +26,7 @@ class Training:
 
     M_IN_KM: int = 1000
     LEN_STEP: float = 0.65  # Один шаг
-    CONVERT_TIME: int = 60
+    CONVERT_TIME_OF_TRAIN_TO_MIN: int = 60
     """Константа для перевода времени."""
 
     def __init__(
@@ -71,7 +71,7 @@ class Running(Training):
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий. Тренировка: бег."""
         mean_speed = self.get_mean_speed()
-        duration_in_min = self.duration * self.CONVERT_TIME
+        duration_in_min = self.duration * self.CONVERT_TIME_OF_TRAIN_TO_MIN
         # (18 * средняя_скорость - 20) *
         # * вес_спортсмена / M_IN_KM * время_тренировки_в_минутах
         return (
@@ -99,12 +99,12 @@ class SportsWalking(Training):
         """Получить количество затраченных калорий.
         Тренировка: спортивная ходьба."""
         mean_speed = self.get_mean_speed()
-        duration_in_min = self.duration * self.CONVERT_TIME
-        # (0.035 * вес + (средняя_скорость**2 // рост) * 0.029 * вес)
+        duration_in_min = self.duration * self.CONVERT_TIME_OF_TRAIN_TO_MIN
+        # (0.035 * вес + (средняя_скорость ** 2 // рост) * 0.029 * вес)
         #  * время_тренировки_в_минутах
         return (
             (self.COEFF_CALORIE_WLK1 * self.weight
-             + (mean_speed**2 // self.height)
+             + (mean_speed ** 2 // self.height)
              * self.COEFF_CALORIE_WLK2 * self.weight) * duration_in_min
         )
 
@@ -149,15 +149,15 @@ def read_package(
     data: list
 ) -> Training:
     """Прочитать данные полученные от датчиков."""
-    workout_collection: Dict[str, Training] = {
+    workout_collection: Dict[str, Training: Type] = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
     }
     try:
         return workout_collection[workout_type](*data)
-    except ValueError:
-        print(f'Нет данных о типе тренировке {workout_type}')
+    except KeyError:
+        raise Exception('Mapping key not found.')
 
 
 def main(training: Training) -> None:
@@ -171,6 +171,7 @@ if __name__ == '__main__':
         ('SWM', [720, 1, 80, 25, 40]),
         ('RUN', [15000, 1, 75]),
         ('WLK', [9000, 1, 75, 180]),
+        ('KEK', [1, 2, 3, 4])
     ]
 
     for workout_type, data in packages:
