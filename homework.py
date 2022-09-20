@@ -103,9 +103,11 @@ class SportsWalking(Training):
         # (0.035 * вес + (средняя_скорость ** 2 // рост) * 0.029 * вес)
         #  * время_тренировки_в_минутах
         return (
-            (self.COEFF_CALORIE_WLK1 * self.weight
-             + (mean_speed ** 2 // self.height)
-             * self.COEFF_CALORIE_WLK2 * self.weight) * duration_in_min
+            (
+                self.COEFF_CALORIE_WLK1 * self.weight
+                + (mean_speed ** 2 // self.height)
+                * self.COEFF_CALORIE_WLK2 * self.weight
+            ) * duration_in_min
         )
 
 
@@ -113,7 +115,7 @@ class Swimming(Training):
     """Тренировка: плавание."""
     LEN_STEP: float = 1.38
     COEFF_CALORIE_SWM1: float = 1.1
-    COEFF_CALORIE_SWM2: float = 2
+    COEFF_CALORIE_SWM2: int = 2
 
     def __init__(
         self,
@@ -144,20 +146,34 @@ class Swimming(Training):
         )
 
 
+def chek_eror_workout_type() -> bool:
+    """Отловить ошибку типа тренировки."""
+    return True
+
+
 def read_package(
     workout_type: str,
     data: list
 ) -> Training:
     """Прочитать данные полученные от датчиков."""
-    workout_collection: Dict[str, Training: Type] = {
+    workout_collection: Dict[str, Type[Training]] = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
     }
-    try:
-        return workout_collection[workout_type](*data)
-    except KeyError:
-        raise Exception('Mapping key not found.')
+
+    check_training(workout_type, workout_collection)
+    return workout_collection[workout_type](*data)
+
+
+def check_training(
+    workout_type: str,
+    workout_collection: Dict[str, Type[Training]],
+) -> bool:
+    if workout_type not in workout_collection:
+        raise ValueError(
+            f'Тренировка {workout_type} не найдена в списке тренировок'
+        )
 
 
 def main(training: Training) -> None:
@@ -170,8 +186,8 @@ if __name__ == '__main__':
     packages = [
         ('SWM', [720, 1, 80, 25, 40]),
         ('RUN', [15000, 1, 75]),
-        ('WLK', [9000, 1, 75, 180])
-        # ('KEK', [1, 2, 3, 4])
+        ('WLK', [9000, 1, 75, 180]),
+        ('KEK', [1, 2, 3, 4])
     ]
 
     for workout_type, data in packages:
