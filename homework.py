@@ -12,6 +12,7 @@ class InfoMessage:
     calories: float
 
     def get_message(self) -> str:
+        """Вернуть строку с сообщением"""
         return (
             f'Тип тренировки: {self.training_type}; '
             f'Длительность: {self.duration:0.3f} ч.; '
@@ -26,8 +27,7 @@ class Training:
 
     M_IN_KM: int = 1000
     LEN_STEP: float = 0.65  # Один шаг
-    CONVERT_TIME_OF_TRAIN_TO_MIN: int = 60
-    """Константа для перевода времени."""
+    CONVERT_TIME_OF_TRAIN_TO_MIN: int = 60  # Константа для перевода времени.
 
     def __init__(
         self,
@@ -146,11 +146,6 @@ class Swimming(Training):
         )
 
 
-def chek_eror_workout_type() -> bool:
-    """Отловить ошибку типа тренировки."""
-    return True
-
-
 def read_package(
     workout_type: str,
     data: list
@@ -170,6 +165,7 @@ def check_training(
     workout_type: str,
     workout_collection: Dict[str, Type[Training]],
 ) -> bool:
+    """Проверить валидность типа тренировки"""
     if workout_type not in workout_collection:
         raise ValueError(
             f'Тренировка {workout_type} не найдена в списке тренировок'
